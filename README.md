@@ -1,6 +1,6 @@
 # WAD
 Creating a Django website
-The API used for displaying the image locations is:
+- The API used for displaying the image locations is:
 
 - [MapBox GL JS](https://www.mapbox.com/mapbox-gljs)
 
