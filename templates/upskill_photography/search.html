@@ -1,0 +1,46 @@
+{% extends 'upskill_photography/base.html' %}
+{% load staticfiles %}
+{% load upskill_photography_template_tags %}
+
+{% block title_block %}
+	Search Result
+{% endblock %}
+
+{% block body_block %}	
+	<div class="bg-dark row rounded-bottom d-flex">
+		<div class="px-4">
+			{% if results %}
+			<p class="text-light"><strong>Showing results for '{{ query }}'</strong></p>
+			{% else %}
+			<p class="text-light"><strong>Could not find any results for '{{ query }}'</strong></p>
+			{% endif %}
+		</div>
+		
+		
+		<form class="ml-auto px-4 text-light" action="{% url 'upskill_photography:search_result' %}" method="post">
+			{% csrf_token %}
+			Sort By: 
+			<input type="hidden" name="search_query" value="{{ query }}">
+			<select class="form-select bg-dark text-light" aria-label="Sorting Style" name="sort_style">
+				<option value="" {% if sort_style == 'relevance' %}selected{% endif %} hidden disabled>Relevance</option>
+				<option value="new" {% if sort_style == 'new' %}selected{% endif %}>Upload Time</option>
+				<option value="views" {% if sort_style == 'views' %}selected{% endif %}>Views</option>
+				<option value="likes" {% if sort_style == 'likes' %}selected{% endif %}>Likes</option>
+				<option value="comments" {% if sort_style == 'comments' %}selected{% endif %}>Comments</option>
+			</select>
+			<select class="form-select bg-dark text-light" aria-label="Sorting Order" name="sort_order">
+				<option value="" {% if sort_order == 'relevance' %}selected{% endif %} hidden disabled></option>
+				<option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Ascending</option>
+				<option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Descending</option>
+			</select>
+			<button class="bg-transparent btn-outline-success" type="submit">Reload</button>
+		</form>
+	</div>
+	{% if results %}
+	<div class="row imagetiles">
+		{% for picture in results %}
+			{% get_picture_thumbnail picture %}
+		{% endfor %}
+	</div>
+	{% endif %}	
+{% endblock %}

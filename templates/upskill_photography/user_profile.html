@@ -1,0 +1,106 @@
+{% extends 'upskill_photography/base.html' %}
+{% load staticfiles %}
+{% load upskill_photography_template_tags %}
+
+{% block title_block %}
+      {% if userprofile %}
+	  {{ userprofile.user.username }}
+	  {% else %}
+	  Invalid Username
+	  {% endif %}
+{% endblock %}
+
+{% block body_block %}
+	{% if userprofile %}
+	<div class="bg-dark rounded-bottom">
+		<div class="row">
+			<div class="col-2">
+				<div class="p-4">
+				{% if userprofile.profile_picture %}
+				<img src="{{ userprofile.profile_picture.url }}" class="img-thumbnail" style="border-radius:50%; border:solid black 2px; background-color: DimGray;" alt="{{ userprofile.user.username }} profile picture">
+				{% else %}
+				<img src="{% static 'images/unknown-user.png' %}" class="img-thumbnail" style="border-radius:50%; border:solid black 2px; background-color: DimGray;" alt="{{ userprofile.user.username }} profile picture">
+				{% endif %}
+				{% if userprofile.user == user %}
+				<div class="p-2 text-center">
+					<a href="{% url 'upskill_photography:change_profile_picture' %}" class="btn btn-sm btn-outline-light">{% if userprofile.profile_picture %}Change Profile Picture{% else %}Add Profile Picture{% endif %}</a>
+				</div>
+				{% endif %}
+				</div>
+			</div>
+			<div class="col-1"></div>
+			<div class="col-7">
+				<table class="table-sm">
+				  <tbody>
+					<tr>
+					  <th scope="row"><span class="text-light">Username:</span></th>
+					  <td><span class="text-light">{{ userprofile.user.username }}</span></td>
+					</tr>
+					<tr>
+					  <th scope="row"><span class="text-light">Member Since:</span></th>
+					  <td><span class="text-light">{{ userprofile.user.date_joined | date:"F d Y" }}</span></td>
+					</tr>
+					<tr>
+					  <th scope="row"><span class="text-light">Total Views:</span></th>
+					  <td><span class="text-light">{{ total_views }}</span></td>
+					</tr>
+					<tr>
+					  <th scope="row"><span class="text-light">Total Likes:</span></th>
+					  <td><span class="text-light">{{ total_likes }}</span></td>
+					</tr>
+					<tr>
+					  <th scope="row"><span class="text-light">Total Comments Received:</span></th>
+					  <td><span class="text-light">{{ comments_received }}</span></td>
+					</tr>
+					<tr>
+					  <th scope="row"><span class="text-light">Total Comments Created:</span></th>
+					  <td><span class="text-light">{{ comments_created }}</span></td>
+					</tr>
+				  </tbody>
+				</table>
+			</div>
+			{% if userprofile.user == user %}
+			<div class="col-2">
+				<p><a href="{% url 'upskill_photography:account' %}" class="btn btn-outline-light p-2">Account</a></p>
+				<p><a href="{% url 'upskill_photography:uploads' %}" class="btn btn-outline-light p-2">View Uploads</a></p>
+			</div>
+			{% endif %}
+		</div>
+		<hr class="border-light" style="width: 99%;">
+		{% if pictures %}
+		<div class="d-flex">
+			<div class="px-4">
+				<p class="float-left text-light"><strong>Pictures By {{ userprofile.user.username }}</strong></p>
+			</div>
+			
+			<form class="ml-auto px-4 text-light" action="{% url 'upskill_photography:userprofile' userprofile.user.username %}" method="post">
+				{% csrf_token %}
+				Sort By: 
+				<select class="form-select bg-dark text-light" aria-label="Sorting Style" name="sort_style">
+					<option value="new" {% if sort_style == 'new' %}selected{% endif %}>Upload Time</option>
+					<option value="views" {% if sort_style == 'views' %}selected{% endif %}>Views</option>
+					<option value="likes" {% if sort_style == 'likes' %}selected{% endif %}>Likes</option>
+					<option value="comments" {% if sort_style == 'comments' %}selected{% endif %}>Comments</option>
+				</select>
+				<select class="form-select bg-dark text-light" aria-label="Sorting Order" name="sort_order">
+					<option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Descending</option>
+					<option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Ascending</option>
+				</select>
+				<button class="bg-transparent btn-outline-success" type="submit">Reload</button>
+			</form>
+		</div>
+		{% else %}
+		<p class="text-light p-4">{{ userprofile.user.username }} has not uploaded any pictures yet.</p>
+		{% endif %}
+	</div>
+	{% if pictures %}
+	<div class="row imagetiles">
+		{% for picture in pictures %}
+			{% get_picture_thumbnail picture %}
+		{% endfor %}
+	</div>
+	{% endif %}
+	{% else %}
+	The user does not exist
+	{% endif %}
+{% endblock %}

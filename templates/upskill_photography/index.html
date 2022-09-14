@@ -1,0 +1,59 @@
+
+{% extends 'upskill_photography/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+   Home
+{% endblock %}
+
+{% block body_block %}
+{% if first_picture %}
+<div class="w-75 mx-auto m-4">
+	<h2 class="text-center"><strong>Our Best Pictures</strong></h2>
+	<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+		<ol class="carousel-indicators">
+			<li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+			{% for i in counter %}
+			<li data-target="#carouselExampleIndicators" data-slide-to="{{ i }}"></li>
+			{% endfor %}
+		</ol>
+		
+		<div class="carousel-inner rounded">
+			<div class="carousel-item active" style="max-height: 80vh;">
+				<a class="d-flex align-items-center justify-content-center" href="{% url 'upskill_photography:picture_view' first_picture.uploading_user.user.username first_picture.picture_id %}">
+					<img class="mw-100" src="{{ first_picture.image.url }}" alt="{{ first_picture.title }}" style="max-height: 75vh;">
+				</a>
+				<div class="carousel-caption d-none d-md-block">
+					<a href="{% url 'upskill_photography:userprofile' first_picture.uploading_user.user.username %}">
+						<h5 class="text-dark" style="text-shadow: 1px 1px #ffffff"><strong>{{ first_picture.uploading_user.user.username }}</strong></h5>
+					</a>
+					<p class="text-dark" style="text-shadow: 1px 1px #ffffff"><strong>{{ first_picture.title }}</strong></p>
+				</div>
+			</div>
+			{% for picture in pictures %}
+			<div class="carousel-item" style="max-height: 80vh;">
+				<a class="d-flex align-items-center justify-content-center" href="{% url 'upskill_photography:picture_view' picture.uploading_user.user.username picture.picture_id %}">
+					<img class="mw-100" src="{{ picture.image.url }}" alt="{{ picture.title }}" style="max-height: 75vh;">
+				</a>
+				<div class="carousel-caption d-none d-md-block">
+					<a href="{% url 'upskill_photography:userprofile' picture.uploading_user.user.username %}">
+						<h5 class="text-dark" style="text-shadow: 1px 1px #ffffff"><strong>{{ picture.uploading_user.user.username }}</strong></h5>
+					</a>
+					<p class="text-dark" style="text-shadow: 1px 1px #ffffff"><strong>{{ picture.title }}</strong></p>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+	<p><a href="{% url 'upskill_photography:discovery' %}" class="text-dark"><h4 class="text-center"><strong>Discover More Pictures</strong></h4></a></p>
+</div>
+{% else %}
+	<h2>OOPS</h2>
+	<h3>It looks likes there are no pictures so far</h3>
+	{% if user.is_authenticated %}
+	<h3>Why don't you make the first move and <a href="{% url 'upskill_photography:upload' %}">Upload</a> your first picture?</h3>
+	{% else %}
+	<h3><a href="{% url 'registration_register' %}">Register Here</a> and upload your first pictures</h3>
+	{% endif %}
+{% endif %}
+{% endblock %}

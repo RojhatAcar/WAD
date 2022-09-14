@@ -1,0 +1,18 @@
+{% extends 'upskill_photography/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+	Your Account
+{% endblock %}
+
+{% block body_block %}
+	<div class="bg-dark px-4 pb-4">
+	<p><a href="{% url 'upskill_photography:userprofile' user.username %}" class="btn btn-outline-light p-2">Back to Profile</a></p>
+	<hr class="border-light">
+	<p class="text-light"><strong>Account and Settings</strong></p>
+	<p><a href="{% url 'auth_password_change' %}" class="btn btn-outline-light p-2">Change Password</a></p>
+	<p><a href="{% url 'upskill_photography:change_profile_picture' %}" class="btn btn-outline-light p-2">Change Profile Picture</a></p>
+	<p><a href="{% url 'upskill_photography:uploads' %}" class="btn btn-outline-light p-2">View Uploads</a></p>
+	<p><a href="{% url 'upskill_photography:upload' %}" class="btn btn-outline-light">Upload a Picture</a></p>
+	</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'upskill_photography/base.html' %}
+{% load staticfiles %}
+{% load upskill_photography_template_tags %}
+
+{% block title_block %}
+	Discover Pictures
+{% endblock %}
+
+{% block body_block %}
+	<div class="bg-dark row rounded-bottom d-flex">
+		<div class="px-4">
+			<p class="text-light"><strong>Discover Pictures</strong></p>
+		</div>
+		
+		
+		<form class="ml-auto px-4 text-light" action="{% url 'upskill_photography:discovery' %}" method="post">
+			{% csrf_token %}
+			Sort By: 
+			<select class="form-select bg-dark text-light" aria-label="Sorting Style" name="sort_style">
+				<option value="new" {% if sort_style == 'new' %}selected{% endif %}>Upload Time</option>
+				<option value="views" {% if sort_style == 'views' %}selected{% endif %}>Views</option>
+				<option value="likes" {% if sort_style == 'likes' %}selected{% endif %}>Likes</option>
+				<option value="comments" {% if sort_style == 'comments' %}selected{% endif %}>Comments</option>
+			</select>
+			<select class="form-select bg-dark text-light" aria-label="Sorting Order" name="sort_order">
+				<option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Descending</option>
+				<option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Ascending</option>
+			</select>
+			<button class="bg-transparent btn-outline-success" type="submit">Reload</button>
+		</form>
+	</div>
+	{% if pictures %}
+	<div class="row imagetiles">
+		{% for picture in pictures %}
+			{% get_picture_thumbnail picture %}
+		{% endfor %}
+	</div>
+	{% endif %}	
+{% endblock %}

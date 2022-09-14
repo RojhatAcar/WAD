@@ -1,0 +1,127 @@
+{% extends 'upskill_photography/base.html' %}
+{% load staticfiles %}
+{% load upskill_photography_template_tags %}
+
+{% block title_block %}
+	{{ picture.title }}
+{% endblock %}
+
+{% block body_block %}
+{% if picture %}
+<div class="row py-2">
+	<div class="col-2 border border-dark">
+		<br>
+		<h5 class="text-center"><strong>{{ picture.title }}</strong></h5>
+		<br>
+		<table class="table-sm">
+			<tbody>
+				<tr>
+					<th scope="row" class="align-top">By</th>
+					<td><a href="{% url 'upskill_photography:userprofile' picture.uploading_user.user.username %}" style="color: black">{{ picture.uploading_user.user.username }}</a></td>
+				</tr>
+				<tr>
+					<th scope="row" class="align-top">Category</th>
+					<td><a href="{% url 'upskill_photography:show_category' picture.category.slug %}" style="color: black">{{ picture.category.name }}</a></td>
+				</tr>
+				<tr>
+					<th scope="row" class="align-top">Uploaded</th>
+					<td>{{ picture.timestamp | date:"F d Y" }}</td>
+				</tr>
+				<tr>
+					<th scope="row" class="align-top">Views</th>
+					<td>{{ picture.views }}</td>
+				</tr>
+				<tr>
+					<th scope="row" class="align-top">Likes</th>
+					<td>
+						<span id="like_count">{{ picture.likes }}</span>
+						{% if user.is_authenticated %}
+						<button id="like_btn"
+								data-pictureid="{{ picture.picture_id }}"
+								class="float-right btn btn-sm btn-outline-dark"
+								type="button">
+							<img id="like-img" src="{% static 'images/like_blank.ico' %}" width="16" height="16">
+							Like
+						</button>
+						{% endif %}
+					</td>
+				</tr>
+				{% if picture.latitude %}
+				<tr>
+					<th scope="row" class="align-top">Location</th>
+					<td>
+						{{ picture.longitude }},<br>
+						{{ picture.latitude }}<br>
+						(lng, lat)<br><br>
+						<button id="map-toggle" data-longitude="{{ picture.longitude }}" data-latitude="{{ picture.latitude }}"class="btn btn-dark" type="button" onclick="toggleMapFunction()">Show Map</button>
+					</td>
+				</tr>
+				{% endif %}
+			</tbody>
+		</table>
+	</div>
+	
+	<div class="col-7" id="center-column">
+		<div class="d-flex align-items-center justify-content-center">
+			<div id="img-container">
+				<img id="picture_image" src="{{ picture.image.url }}" class="img-thumbnail img-responsive" alt="{{ picture.title }}" style="max-height: 80vh;">
+			</div>
+		</div>
+		{% if picture.latitude %}
+		<div id="map-container" data-show-location="true"></div>
+		{% endif %}
+	</div>
+	
+	<div class="col-3 border border-dark" id="comment_column" style="overflow-y: scroll;">
+		<p class="text-center"><strong>Comments</strong></p>
+		{% if user.is_authenticated %}
+		<div class="border border-dark rounded">
+			<strong class="float-right p-2">{{ user.username }}</strong>
+			<form class="text-light" action="{% url 'upskill_photography:picture_view' picture.uploading_user.user.username picture.picture_id %}" method="post">
+				{% csrf_token %}
+				<input type="hidden" name="comment_username" value="{{ user.username }}">
+				<input class="form-control" type="text" name="comment_text" placeholder="Leave a Comment..." aria-label="Leave a Comment...">
+				<button class="btn btn-primary btn-sm p-1" type="submit">Done</button>
+			</form>
+		</div>
+		{% endif %}
+		{% for comment in comments %}
+		<div id="cid-{{ comment.id }}" class="border border-dark rounded">
+			<div>
+				<strong class="pl-2"><a href="{% url 'upskill_photography:userprofile' comment.user.user.username %}" class="text-dark">{{ comment.user.user.username }}</a></strong>
+				{% if user == comment.user.user %}
+				<button class="comment_delete_btn btn btn-link text-danger float-right" data-commentid="{{ comment.id }}">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square float-right" viewBox="0 0 16 16">
+						<path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+						<path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+					</svg>
+				</button>
+				{% endif %}
+				<br><span class="pl-2">{{ comment.timestamp | date:"F d Y" }}</span>
+			</div>
+			<hr>
+			<p class="px-2">
+				{{ comment.text }}
+			</p>
+		</div>
+		{% endfor %}
+	</div>
+</div>
+<div>
+	{% if more_pictures %}
+	<hr>
+	<p><strong>More Pictures By <a href="{% url 'upskill_photography:userprofile' picture.uploading_user.user.username %}" class="text-dark">{{ picture.uploading_user.user.username }}</a></strong></p>
+	<div class="row imagetiles">
+		{% for picture in more_pictures %}
+			{% get_picture_thumbnail picture %}
+		{% endfor %}
+	</div>
+	{% endif %}
+</div>
+{% else %}
+<p>This picture does not exist</p>
+{% endif %}
+
+
+
+{% endblock %}

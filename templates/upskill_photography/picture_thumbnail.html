@@ -1,0 +1,26 @@
+{% load staticfiles %}
+
+<div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12 mh-25">
+	<a class="img-wrapper" href="{% url 'upskill_photography:picture_view' picture.uploading_user.user.username picture.picture_id %}">
+		<img src="{{ picture.thumbnail.url }}" class="img-thumbnail img-responsive rounded" alt="{{ picture.title }}">
+	</a>
+	<div class="font-italic text-nowrap overflow-hidden">{{ picture.title }}</div>
+	<div class="text-nowrap overflow-hidden">
+		<a href="{% url 'upskill_photography:userprofile' picture.uploading_user.user.username %}" style="color: black"><span>{{ picture.uploading_user.user.username }}</span></a>
+		<div class="float-right">
+			{{ picture.views }}
+			<img src="{% static 'images/view.ico' %}" alt="Views Icon" width="16" height="16">
+		</div><br>
+		<a href="{% url 'upskill_photography:show_category' picture.category.slug %}" style="color: black"><span>{{ picture.category.name }}</span></a>
+		<div class="float-right">
+			{{ picture.likes }}
+			<img src="{% static 'images/like_blank.ico' %}" alt="Empty Like Icon" width="16" height="16">
+		</div><br>
+		<span>{{ picture.timestamp | date:"F d Y" }}</span><br>
+		{% if picture.latitude %}
+		{% if picture.longitude %}
+		<span class="text-muted">Location Available</span>
+		{% endif %}
+		{% endif %}
+	</div>
+</div>

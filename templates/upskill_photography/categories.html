@@ -1,0 +1,17 @@
+{% extends 'upskill_photography/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+	Picture Categories
+{% endblock %}
+
+{% block body_block %}
+<div class="row imagetiles">
+	{% for picture in pictures %}
+		<a class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-xs-12" href="{% url 'upskill_photography:show_category' picture.category.slug %}">
+			<div class="font-italic text-nowrap overflow-hidden text-center"><h2 class="text-dark">{{ picture.category.name }}</h2></div>
+			<img src="{{ picture.thumbnail.url }}" class="img-thumbnail" alt="{{ picture.title }}">
+		</a>
+	{% endfor %}
+</div>
+{% endblock %}
